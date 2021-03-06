@@ -111,40 +111,15 @@ class UpdateAudioView(MethodView):
             body = request.get_json()
             body.pop("audioFileType")
             if audioFileType == "song":
-                Song.objects.get_or_404(id=id).update(**body)
-                song = Song.objects.get_or_404(id=id)
-                response = {
-                    "id": song.pk,
-                    "song_title": song.song_title,
-                    "song_duration": song.song_duration,
-                    "uploaded": song.uploaded
-                }
+                response = AudioController.get_and_update_song(id, body)
                 return make_response(json.loads(json_util.dumps(response)), 200)
             
             elif audioFileType == "podcast":
-                Podcast.objects.get_or_404(id=id).update(**body)
-                podcast = Podcast.objects.get_or_404(id=id)
-                response = {
-                    "id": podcast.pk,
-                    "podcast_name": podcast.podcast_name,
-                    "podcast_duration": podcast.podcast_duration,
-                    "host": podcast.host,
-                    "participants": podcast.participants,
-                    "uploaded": podcast.uploaded
-                }
+                response = AudioController.get_and_update_podcast(id, body)
                 return make_response(json.loads(json_util.dumps(response)), 200)
 
             elif audioFileType == "audiobook":
-                AudioBook.objects.get_or_404(id=id).update(**body)
-                audiobook = AudioBook.objects.get(id=id)
-                response = {
-                    "id": audiobook.pk,
-                    "title": audiobook.title,
-                    "duration": audiobook.duration,
-                    "author": audiobook.author,
-                    "narrator": audiobook.narrator,
-                    "uploaded": audiobook.uploaded
-                }
+                response = AudioController.get_and_update_audiobook(id, body)
                 return make_response(json.loads(json_util.dumps(response)), 200)
             else:
                 return make_response(jsonify({"error": "Bad Request"}), 400)
