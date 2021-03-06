@@ -40,7 +40,7 @@ Simple audio API built using flask, mongodb
 ## Tests
 
 To run tests
-    `test command`
+    `python -m unittest`
 
 ## Documentation
 
