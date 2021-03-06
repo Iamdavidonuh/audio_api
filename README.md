@@ -2,6 +2,8 @@
 
 Simple audio API built using flask, mongodb
 
+[![Tests](https://github.com/Iamdavidonuh/audio_api/actions/workflows/test.yml/badge.svg)](https://github.com/Iamdavidonuh/audio_api/actions/workflows/test.yml)
+
 ## Table of contents
 
 1. [Requirements](#Requirements)
