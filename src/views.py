@@ -39,7 +39,7 @@ class CreateAudiosView(MethodView):
             else:
                 #raise error
                 return make_response(jsonify({"error": "Bad Request"}), 400)
-        except Exception():
+        except Exception as e:
             return make_response(jsonify({"error": "Internal Server Error"}), 500)
 
 # Get Requests
@@ -76,7 +76,7 @@ class GetAudioView(MethodView):
                     return make_response(json.loads(json_util.dumps(response)), 200)
             else:
                 return make_response(jsonify({"error": "Bad Request"}), 400)
-        except Exception():
+        except Exception as e:
             return make_response(jsonify({"error": "Internal Server Error"}), 500)
 
 
@@ -103,7 +103,7 @@ class UpdateAudioView(MethodView):
                 return make_response(json.loads(json_util.dumps(response)), 200)
             else:
                 return make_response(jsonify({"error": "Bad Request"}), 400)
-        except Exception():
+        except Exception as e:
             return make_response(jsonify({"error": "Internal Server Error"}), 500)
 
 
@@ -128,5 +128,5 @@ class DeleteAudioView(MethodView):
                 return make_response(response, 200)
             else:
                 return make_response(jsonify({"error": "Bad Request"}), 400)
-        except Exception():
+        except Exception as e:
             return make_response(jsonify({"error": "Internal Server Error"}), 500)
