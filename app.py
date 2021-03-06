@@ -68,39 +68,53 @@ class GetAudioView(MethodView):
     def get(self, audioFileType, id):
         try:
             if audioFileType == "song":
-                song = Song.objects.get_or_404(id=id)
-                
-                response = {
-                    "id": song.pk,
-                    "song_title": song.song_title,
-                    "song_duration": song.song_duration,
-                    "uploaded": song.uploaded
-                }
-                return make_response(json.loads(json_util.dumps(response)), 200)
+                # check if id is None and return all songs
+                if id is None:
+                    songs = Song.objects.all()
+                    return make_response(json.loads(json_util.dumps(songs.to_json())), 200)
+                else:
+                    song = Song.objects.get_or_404(id=id)
+                    
+                    response = {
+                        "id": song.pk,
+                        "song_title": song.song_title,
+                        "song_duration": song.song_duration,
+                        "uploaded": song.uploaded
+                    }
+                    return make_response(json.loads(json_util.dumps(response)), 200)
             
             elif audioFileType == "podcast":
-                podcast = Podcast.objects.get_or_404(id=id)
-                response = {
-                    "id": podcast.pk,
-                    "podcast_name": podcast.podcast_name,
-                    "podcast_duration": podcast.podcast_duration,
-                    "host": podcast.host,
-                    "participants": podcast.participants,
-                    "uploaded": podcast.uploaded
-                }
-                return make_response(json.loads(json_util.dumps(response)), 200)
+                # get all postcasts if id is None
+                if id is None:
+                    podcasts = Podcast.objects.all()
+                    return make_response(json.loads(json_util.dumps(podcasts.to_json())), 200)
+                else:
+                    podcast = Podcast.objects.get_or_404(id=id)
+                    response = {
+                        "id": podcast.pk,
+                        "podcast_name": podcast.podcast_name,
+                        "podcast_duration": podcast.podcast_duration,
+                        "host": podcast.host,
+                        "participants": podcast.participants,
+                        "uploaded": podcast.uploaded
+                    }
+                    return make_response(json.loads(json_util.dumps(response)), 200)
 
             elif audioFileType == "audiobook":
-                audiobook = AudioBook.objects.get(id=id)
-                response = {
-                    "id": audiobook.pk,
-                    "title": audiobook.title,
-                    "duration": audiobook.duration,
-                    "author": audiobook.author,
-                    "narrator": audiobook.narrator,
-                    "uploaded": audiobook.uploaded
-                }
-                return make_response(json.loads(json_util.dumps(response)), 200)
+                if id is None:
+                    audiobooks = AudioBook.objects.all()
+                    return make_response(json.loads(json_util.dumps(audiobooks.to_json())), 200)
+                else:
+                    audiobook = AudioBook.objects.get(id=id)
+                    response = {
+                        "id": audiobook.pk,
+                        "title": audiobook.title,
+                        "duration": audiobook.duration,
+                        "author": audiobook.author,
+                        "narrator": audiobook.narrator,
+                        "uploaded": audiobook.uploaded
+                    }
+                    return make_response(json.loads(json_util.dumps(response)), 200)
             else:
                 return make_response(jsonify({"error": "Bad Request"}), 400)
         except Exception():
@@ -192,6 +206,11 @@ app.add_url_rule('/create/', view_func=CreateAudiosView.as_view('create_audio_so
 app.add_url_rule(
     '/get/<audioFileType>/<id>',
     view_func=GetAudioView.as_view("get_audio_song_podcast_audiobook"),
+    methods=["GET",]
+    )
+app.add_url_rule(
+    '/get/<audioFileType>/', defaults={'id': None},
+    view_func=GetAudioView.as_view("get_all_song_podcast_audiobook"),
     methods=["GET",]
     )
 
