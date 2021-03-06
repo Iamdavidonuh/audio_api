@@ -3,7 +3,9 @@ from flask.views import MethodView
 from bson import json_util
 from models.db import initialize_db
 from models.models import Song, Podcast, AudioBook
-from utils import create_song, create_podcasts, create_audiobooks
+from audio_controller import AudioController
+
+
 #init app
 app = Flask(__name__)
 
@@ -34,12 +36,12 @@ class CreateAudiosView(MethodView):
             a_type = request.json['audioFileType']
         
             if a_type == "song":
-                response = create_song(request.json['song_title'], request.json['song_duration'])
+                response = AudioController.create_song(request.json['song_title'], request.json['song_duration'])
                 return make_response(json.loads(json_util.dumps(response)), 200)
             
             elif a_type == "podcast":
 
-                response = create_podcasts(
+                response = AudioController.create_podcasts(
                     podcast_name=request.json['podcast_name'],
                     podcast_duration=request.json['podcast_duration'],
                     host=request.json['host'], participants=request.json['participants']
@@ -48,7 +50,7 @@ class CreateAudiosView(MethodView):
                 return make_response(json.loads(json_util.dumps(response)), 200)
             
             elif a_type == "audiobook":
-                response = create_audiobooks(
+                response = AudioController.create_audiobooks(
                     title=request.json['title'],
                     duration=request.json['duration'],
                     author=request.json['author'], narrator=request.json['narrator']
@@ -73,14 +75,7 @@ class GetAudioView(MethodView):
                     songs = Song.objects.all()
                     return make_response(json.loads(json_util.dumps(songs.to_json())), 200)
                 else:
-                    song = Song.objects.get_or_404(id=id)
-                    
-                    response = {
-                        "id": song.pk,
-                        "song_title": song.song_title,
-                        "song_duration": song.song_duration,
-                        "uploaded": song.uploaded
-                    }
+                    response = AudioController.get_song(id)
                     return make_response(json.loads(json_util.dumps(response)), 200)
             
             elif audioFileType == "podcast":
@@ -89,15 +84,7 @@ class GetAudioView(MethodView):
                     podcasts = Podcast.objects.all()
                     return make_response(json.loads(json_util.dumps(podcasts.to_json())), 200)
                 else:
-                    podcast = Podcast.objects.get_or_404(id=id)
-                    response = {
-                        "id": podcast.pk,
-                        "podcast_name": podcast.podcast_name,
-                        "podcast_duration": podcast.podcast_duration,
-                        "host": podcast.host,
-                        "participants": podcast.participants,
-                        "uploaded": podcast.uploaded
-                    }
+                    response = AudioController.get_podcast(id)
                     return make_response(json.loads(json_util.dumps(response)), 200)
 
             elif audioFileType == "audiobook":
@@ -105,15 +92,7 @@ class GetAudioView(MethodView):
                     audiobooks = AudioBook.objects.all()
                     return make_response(json.loads(json_util.dumps(audiobooks.to_json())), 200)
                 else:
-                    audiobook = AudioBook.objects.get(id=id)
-                    response = {
-                        "id": audiobook.pk,
-                        "title": audiobook.title,
-                        "duration": audiobook.duration,
-                        "author": audiobook.author,
-                        "narrator": audiobook.narrator,
-                        "uploaded": audiobook.uploaded
-                    }
+                    response = AudioController.get_audiobook(id)
                     return make_response(json.loads(json_util.dumps(response)), 200)
             else:
                 return make_response(jsonify({"error": "Bad Request"}), 400)
