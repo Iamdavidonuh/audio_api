@@ -9,11 +9,13 @@ from src.views import CreateAudiosView, GetAudioView, UpdateAudioView, DeleteAud
 app = Flask(__name__)
 
 # db
-app.config['MONGODB_DB'] = 'admin'
-app.config['MONGODB_HOST'] = 'localhost'
-app.config['MONGODB_PORT'] = 27017
-app.config['MONGODB_USERNAME'] = 'admin'
-app.config['MONGODB_PASSWORD'] = 'password'
+app.config['MONGODB_SETTINGS'] = {
+    'db': 'test_db',
+    'host': 'localhost',
+    'port': 27017,
+    'username': 'admin',
+    'password': 'password',
+    'authentication_source': 'admin'}
 initialize_db(app)
 
 
