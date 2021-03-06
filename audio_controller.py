@@ -161,3 +161,33 @@ class AudioController():
             "uploaded": audiobook.uploaded
         }
         return response
+
+    @staticmethod
+    def delete_song(id) -> dict:
+        """
+        Deletes a song object from the database
+        :param song id
+        :
+        """
+        Song.objects.get_or_404(id=id).delete()
+        return {}
+
+    @staticmethod
+    def delete_podcast(id) -> dict:
+        """
+        Deletes a podcast object from the database
+        :param podcast id
+        :
+        """
+        Podcast.objects.get_or_404(id=id).delete()
+        return {}
+
+    @staticmethod
+    def delete_audiobook(id) -> dict:
+        """
+        Deletes a audiobook object from the database
+        :param audio id
+        :
+        """
+        AudioBook.objects.get_or_404(id=id).delete()
+        return {}

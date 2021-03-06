@@ -136,17 +136,16 @@ class DeleteAudioView(MethodView):
     def delete(self, audioFileType, id):
         try:
             if audioFileType == "song":
-                Song.objects.get_or_404(id=id).delete()
-
-                return make_response({}, 200)
+                response = AudioController.delete_song(id)
+                return make_response(response, 200)
             
             elif audioFileType == "podcast":
-                Podcast.objects.get_or_404(id=id).delete()
-                return make_response({}, 200)
+                response = AudioController.delete_podcast(id)
+                return make_response(response, 200)
 
             elif audioFileType == "audiobook":
-                AudioBook.objects.get_or_404(id=id).delete()
-                return make_response({}, 200)
+                response = AudioController.delete_audiobook(id)
+                return make_response(id, 200)
             else:
                 return make_response(jsonify({"error": "Bad Request"}), 400)
         except Exception():
