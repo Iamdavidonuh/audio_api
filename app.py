@@ -159,26 +159,55 @@ class UpdateAudioView(MethodView):
             return make_response(jsonify({"error": "Internal Server Error"}), 500)
 
 
+class DeleteAudioView(MethodView):
+    """
+    Deletes an audio(podcast, song or audiobook)
+    based on audioFileType and id
+    """
+
+    def delete(self, audioFileType, id):
+        try:
+            if audioFileType == "song":
+                Song.objects.get_or_404(id=id).delete()
+
+                return make_response({}, 200)
+            
+            elif audioFileType == "podcast":
+                Podcast.objects.get_or_404(id=id).delete()
+                return make_response({}, 200)
+
+            elif audioFileType == "audiobook":
+                AudioBook.objects.get_or_404(id=id).delete()
+                return make_response({}, 200)
+            else:
+                return make_response(jsonify({"error": "Bad Request"}), 400)
+        except Exception():
+            return make_response(jsonify({"error": "Internal Server Error"}), 500)
 
 
 # create
-app.add_url_rule('/audio/create/', view_func=CreateAudiosView.as_view('create_audio_song_podcast_audiobook'))
+app.add_url_rule('/create/', view_func=CreateAudiosView.as_view('create_audio_song_podcast_audiobook'))
 
 # get
 app.add_url_rule(
-    '/audio/<audioFileType>/<id>',
+    '/get/<audioFileType>/<id>',
     view_func=GetAudioView.as_view("get_audio_song_podcast_audiobook"),
     methods=["GET",]
     )
 
 # update
 app.add_url_rule(
-    '/audio/update/<audioFileType>/<id>',
+    '/update/<audioFileType>/<id>',
     view_func=UpdateAudioView.as_view("update_audio_song_podcast_audiobook"),
     methods=["PUT",]
     )
 
-
+# delete
+app.add_url_rule(
+    '/delete/<audioFileType>/<id>',
+    view_func=DeleteAudioView.as_view("delete_audio_song_podcast_audiobook"),
+    methods=["DELETE",]
+    )
 
 
 # Run Server
