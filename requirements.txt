@@ -15,9 +15,12 @@ lazy-object-proxy==1.5.2
 MarkupSafe==1.1.1
 mccabe==0.6.1
 mongoengine==0.23.0
+mongomock==3.22.1
 pylint==2.7.2
 pymongo==3.11.3
 requests==2.25.1
+sentinels==1.0.0
+six==1.15.0
 urllib3==1.26.3
 Werkzeug==1.0.1
 wrapt==1.12.1
