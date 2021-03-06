@@ -1,17 +1,6 @@
 from datetime import datetime
 from .db import db
 
-class CustomListField(db.ListField):
-    def __init__(self, max_length=None,  **kwargs):
-        self.max_length = max_length
-        super(CustomListField, self).__init__(**kwargs)
-
-    def validate(self, value):
-        super(CustomListField, self).validate(value)
-
-        if self.max_length is not None and len(value) > self.max_length:
-            self.error('Too many items in the list')
-
 
 class Song(db.Document):
     song_title = db.StringField(required=True, max_length=100)
