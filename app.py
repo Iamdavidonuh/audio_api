@@ -18,42 +18,108 @@ initialize_db(app)
 
 @app.route('/', methods=['GET'])
 def get_audios():
-    audios = Podcast.objects().to_json()
-    return Response(audios, mimetype="application/json", status=200)
+    audios = Song.objects().to_json()
+    podcasts = Podcast.objects.to_json()
+    audiobook = AudioBook.objects.to_json()
+    return Response(audiobook, mimetype="application/json", status=200)
 
+#Post requests
 class CreateAudiosView(MethodView):
+    """
+    Used to create 3 types of audio file: songs, podcasts, audiobooks
+    """
     def post(self):
-        a_type = request.json['audioFileType']
-    
-        if a_type == "song":
-            response = create_song(request.json['song_title'], request.json['song_duration'])
-            return make_response(json.loads(json_util.dumps(response)), 200)
-        
-        elif a_type == "podcast":
 
-            response = create_podcasts(
-                podcast_name=request.json['podcast_name'],
-                podcast_duration=request.json['podcast_duration'],
-                host=request.json['host'], participants=request.json['participants']
-                )
-            
-            return make_response(json.loads(json_util.dumps(response)), 200)
+        try:
+            a_type = request.json['audioFileType']
         
-        elif a_type == "audiobook":
-            response = create_audiobooks(
-                title=request.json['title'],
-                duration=request.json['duration'],
-                author=request.json['author'], narrator=request.json['narrator']
-            )
-            return make_response(json.loads(json_util.dumps(response)), 200)
-        else:
-            #raise error
+            if a_type == "song":
+                response = create_song(request.json['song_title'], request.json['song_duration'])
+                return make_response(json.loads(json_util.dumps(response)), 200)
+            
+            elif a_type == "podcast":
+
+                response = create_podcasts(
+                    podcast_name=request.json['podcast_name'],
+                    podcast_duration=request.json['podcast_duration'],
+                    host=request.json['host'], participants=request.json['participants']
+                    )
+                
+                return make_response(json.loads(json_util.dumps(response)), 200)
+            
+            elif a_type == "audiobook":
+                response = create_audiobooks(
+                    title=request.json['title'],
+                    duration=request.json['duration'],
+                    author=request.json['author'], narrator=request.json['narrator']
+                )
+                return make_response(json.loads(json_util.dumps(response)), 200)
+            else:
+                #raise error
+                return make_response(jsonify({"error": "Bad Request"}), 400)
+        except Exception():
+            return make_response(jsonify({"error": "Internal Server Error"}), 500)
+
+# Get Requests
+class GetAudioView(MethodView):
+    """
+    Returns an audio(podcast, song or audiobook) based on audioFileType and id
+    """
+    def get(self, audioFileType, id):
+        try:
+            if audioFileType == "song":
+                song = Song.objects.get_or_404(id=id)
+                
+                response = {
+                    "id": song.pk,
+                    "song_title": song.song_title,
+                    "song_duration": song.song_duration,
+                    "uploaded": song.uploaded
+                }
+                return make_response(json.loads(json_util.dumps(response)), 200)
+            
+            elif audioFileType == "podcast":
+                podcast = Podcast.objects.get_or_404(id=id)
+                response = {
+                    "id": podcast.pk,
+                    "podcast_name": podcast.podcast_name,
+                    "podcast_duration": podcast.podcast_duration,
+                    "host": podcast.host,
+                    "participants": podcast.participants,
+                    "uploaded": podcast.uploaded
+                }
+                return make_response(json.loads(json_util.dumps(response)), 200)
+
+            elif audioFileType == "audiobook":
+                audiobook = AudioBook.objects.get(id=id)
+                response = {
+                    "id": audiobook.pk,
+                    "title": audiobook.title,
+                    "duration": audiobook.duration,
+                    "author": audiobook.author,
+                    "narrator": audiobook.narrator,
+                    "uploaded": audiobook.uploaded
+                }
+                return make_response(json.loads(json_util.dumps(response)), 200)
+            else:
+                return make_response(jsonify({"error": "Bad Request"}), 400)
+        except Exception():
             return make_response(jsonify({"error": "Internal Server Error"}), 500)
 
 
 
 
+
+
+
 app.add_url_rule('/audio/create/', view_func=CreateAudiosView.as_view('create_audio_song_podcast_audiobook'))
+
+app.add_url_rule(
+    '/audio/<audioFileType>/<id>',
+    view_func=GetAudioView.as_view("get_audio_song_podcast_audiobook"),
+    methods=["GET",]
+    )
+
 
 # Run Server
 if __name__ == "__main__":
