@@ -21,7 +21,7 @@ def get_audios():
     audios = Song.objects().to_json()
     podcasts = Podcast.objects.to_json()
     audiobook = AudioBook.objects.to_json()
-    return Response(audiobook, mimetype="application/json", status=200)
+    return Response(audios, mimetype="application/json", status=200)
 
 #Post requests
 class CreateAudiosView(MethodView):
@@ -107,18 +107,78 @@ class GetAudioView(MethodView):
             return make_response(jsonify({"error": "Internal Server Error"}), 500)
 
 
+class UpdateAudioView(MethodView):
+    """
+    Updates and returns an audio(podcast, song or audiobook)
+    based on audioFileType and id
+    """
+
+    def put(self, audioFileType, id):
+        try:
+            body = request.get_json()
+            body.pop("audioFileType")
+            if audioFileType == "song":
+                Song.objects.get_or_404(id=id).update(**body)
+                song = Song.objects.get_or_404(id=id)
+                response = {
+                    "id": song.pk,
+                    "song_title": song.song_title,
+                    "song_duration": song.song_duration,
+                    "uploaded": song.uploaded
+                }
+                return make_response(json.loads(json_util.dumps(response)), 200)
+            
+            elif audioFileType == "podcast":
+                Podcast.objects.get_or_404(id=id).update(**body)
+                podcast = Podcast.objects.get_or_404(id=id)
+                response = {
+                    "id": podcast.pk,
+                    "podcast_name": podcast.podcast_name,
+                    "podcast_duration": podcast.podcast_duration,
+                    "host": podcast.host,
+                    "participants": podcast.participants,
+                    "uploaded": podcast.uploaded
+                }
+                return make_response(json.loads(json_util.dumps(response)), 200)
+
+            elif audioFileType == "audiobook":
+                AudioBook.objects.get_or_404(id=id).update(**body)
+                audiobook = AudioBook.objects.get(id=id)
+                response = {
+                    "id": audiobook.pk,
+                    "title": audiobook.title,
+                    "duration": audiobook.duration,
+                    "author": audiobook.author,
+                    "narrator": audiobook.narrator,
+                    "uploaded": audiobook.uploaded
+                }
+                return make_response(json.loads(json_util.dumps(response)), 200)
+            else:
+                return make_response(jsonify({"error": "Bad Request"}), 400)
+        except Exception():
+            return make_response(jsonify({"error": "Internal Server Error"}), 500)
 
 
 
 
-
+# create
 app.add_url_rule('/audio/create/', view_func=CreateAudiosView.as_view('create_audio_song_podcast_audiobook'))
 
+# get
 app.add_url_rule(
     '/audio/<audioFileType>/<id>',
     view_func=GetAudioView.as_view("get_audio_song_podcast_audiobook"),
     methods=["GET",]
     )
+
+# update
+app.add_url_rule(
+    '/audio/update/<audioFileType>/<id>',
+    view_func=UpdateAudioView.as_view("update_audio_song_podcast_audiobook"),
+    methods=["PUT",]
+    )
+
+
 
 
 # Run Server
