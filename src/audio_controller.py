@@ -1,4 +1,5 @@
-from models.models import Song, Podcast, AudioBook
+from src.models.models import Song, Podcast, AudioBook
+
 
 class AudioController():
 
