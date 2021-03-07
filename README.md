@@ -1,6 +1,6 @@
 # audio_api
 
-Simple audio API built using flask, mongodb
+CodeTest: Simple audio API built using flask, mongodb
 
 [![Tests](https://github.com/Iamdavidonuh/audio_api/actions/workflows/test.yml/badge.svg)](https://github.com/Iamdavidonuh/audio_api/actions/workflows/test.yml)
 
@@ -42,7 +42,8 @@ Simple audio API built using flask, mongodb
 ## Tests
 
 To run tests
-    `python -m unittest`
+
+`python -m unittest` or `pytest`
 
 ## Documentation
 
