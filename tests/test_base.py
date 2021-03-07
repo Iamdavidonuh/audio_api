@@ -1,4 +1,5 @@
 import unittest
+from app import app
 from src.models.models import AudioBook, Song, Podcast
 from mongoengine import connect, disconnect
 
@@ -12,6 +13,10 @@ class TestBase(unittest.TestCase):
     @classmethod
     def tearDownClass(cls):
        disconnect()
+    
+    def setUp(self):
+        self.app = app.test_client()
+
 
 
 class TestModelBase(unittest.TestCase):
