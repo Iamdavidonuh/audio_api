@@ -16,7 +16,6 @@ app.config['MONGODB_SETTINGS'] = {
     'username': 'admin',
     'password': 'password',
     'authentication_source': 'admin'}
-initialize_db(app)
 
 
 @app.route('/', methods=['GET'])
@@ -61,4 +60,5 @@ app.add_url_rule(
 
 # Run Server
 if __name__ == "__main__":
+    initialize_db(app)
     app.run(debug=True)
